@@ -351,6 +351,7 @@ export default {
         }
 
       } else {
+
         let scrolledIndex = this.getScrolledIndex(-this.myScroll.y)
         let scrolledLength = Math.max(scrolledIndex - this.buffer, 0)
         let majorPhase = Math.floor(scrolledLength / this.pool.length)
@@ -370,7 +371,7 @@ export default {
         }
       }
       currentShowIndexList.sort((a, b) => a - b)
-      this.$emit("updateShowItems", {
+      this.$emit('updateShowItems', {
         list: currentShowIndexList
       })
     },
