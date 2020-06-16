@@ -94,16 +94,12 @@ export default {
       pullState: '',
       accumulator: 0,
       oriItemLength: 0,
-      scrolledItem: null,
-      currentShowItems: {
-        start: 0,
-        length: 0
-      },
+      scrolledItem: null
     }
   },
   created () {
     this.buffer = this.bufferSize || 5
-    this.setPool(0, this.buffer)
+    this.pool = this.items.slice(0, this.buffer)
   },
   mounted () {
     this.$nextTick(() => {
@@ -113,7 +109,7 @@ export default {
   watch: {
     items (newArr, oldArr) {
       if (!this.viewInited) {
-        this.setPool(0, this.buffer)
+        this.pool = this.items.slice(0, this.buffer)
         this.$nextTick(() => {
           this.generateItemAccumulator(true)
           this.initScrollView()
@@ -121,7 +117,7 @@ export default {
       }
       if (this.pool.length < this.poolLength) {
         let index = this.items.indexOf(this.pool[0])
-        this.setPool(index, this.poolLength)
+        this.pool = this.items.slice(index, this.poolLength)
       }
     }
   },
@@ -179,21 +175,18 @@ export default {
       if (!this.variable) {
         this.itemHeight = this.$el.querySelector('.list-item').offsetHeight
         this.poolLength = Math.ceil(this.wrapperHeight / this.itemHeight) + 2 * this.buffer
-        this.setPool(this.currentShowItems.start || 0, this.poolLength)
+        this.pool = this.items.slice(0, this.poolLength)
         this.updateScrollView()
         this.resetScroller()
+        this.$emit('updatePool', this.pool)
       } else {
         let initSize = this.getScrolledIndex(this.wrapperHeight)
         this.poolLength = initSize + 2 * this.buffer
-        this.setPool(this.currentShowItems.start || 0, this.poolLength)
+        this.pool = this.items.slice(0, this.poolLength)
         this.resetScroller()
+        this.$emit('updatePool', this.pool)
       }
       this.viewInited = true
-    },
-    setPool(start, length) {
-      this.pool = this.items.slice(start, length)
-      this.currentShowItems = { start, length }
-      this.emitUpdateItemsEvent()
     },
     initEvents () {
       if (this.myScroll) {
@@ -243,12 +236,6 @@ export default {
         this.triggerPulldownRefresh()
       } else {
         this.updateScrollView()
-        if (this.emitCurrentItemListTimer) {
-          clearTimeout(this.emitCurrentItemListTimer)
-          this.emitCurrentItemListTimer = setTimeout(() => {
-
-          })
-        }
       }
     },
     handleScrollEndEvent () {
@@ -387,29 +374,20 @@ export default {
         let index = top / this.itemHeight
         if (index < this.items.length) {
           let item = this.items[index]
-          this.updateCurrentPoolStartIndex(index)
           item._top = top
           this.$set(this.pool, i, item)
         }
       } else {
         let item = this.items[top]
-        this.updateCurrentPoolStartIndex(top)
         this.$set(this.pool, i, item)
       }
-    },
-    updateCurrentPoolStartIndex(newStart) {
-      this.currentShowItems.start = Math.min(this.currentShowItems.start, newStart)
-      this.emitUpdateItemsEvent()
-    },
-    emitUpdateItemsEvent() {
-      this.$emit('updatePool', this.pool)
     },
     getItemStyle (item) {
       return {
         transform: 'translate(0, ' + item._top + 'px)'
       }
     }
-  },
+  }
 }
 </script>
 <style lang="postcss">
