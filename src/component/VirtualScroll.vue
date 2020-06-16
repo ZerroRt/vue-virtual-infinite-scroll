@@ -168,14 +168,10 @@ export default {
       }
     },
     initScroller () {
-      if (!this.myScroll) {
-        this.generateItemAccumulator(true)
-        this.myScroll = new IScroll('#wrapper', this.iscrollOptions)
-        this.initScrollView()
-        this.initEvents()
-      } else {
-        this.resetScroller(null, 600)
-      }
+      this.generateItemAccumulator(true)
+      this.myScroll = new IScroll('#wrapper', this.iscrollOptions)
+      this.initScrollView()
+      this.initEvents()
     },
     initScrollView () {
       this.wrapperHeight = this.$el.clientHeight
@@ -260,7 +256,7 @@ export default {
         this.pullState = ''
         this.myScroll.pullState = ''
       }
-      this.$emit('scrollEnd')
+      this.$emit('updatePool', this.pool)
     },
     handlePullDownEndEvent () {
       if (this.pullState === 'trigger') {
@@ -406,7 +402,7 @@ export default {
       this.emitUpdateItemsEvent()
     },
     emitUpdateItemsEvent() {
-      this.$emit('updateShowItems', this.currentShowItems)
+      this.$emit('updatePool', this.pool)
     },
     getItemStyle (item) {
       return {
