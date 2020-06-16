@@ -152,6 +152,7 @@ export default {
   methods: {
     resizeHandler() {
       setTimeout(() => {
+        console.error('resize')
           this.resetScroller(null, 600)
         }, 500)
     },
