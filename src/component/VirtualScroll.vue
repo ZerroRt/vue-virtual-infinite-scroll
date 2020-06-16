@@ -94,7 +94,8 @@ export default {
       pullState: '',
       accumulator: 0,
       oriItemLength: 0,
-      scrolledItem: null
+      scrolledItem: null,
+      handleResize: this.resizeHandler.bind(this),
     }
   },
   created () {
@@ -104,6 +105,7 @@ export default {
   mounted () {
     this.$nextTick(() => {
       this.initScroller()
+      window.addEventListener('resize', this.handleResize)
     })
   },
   watch: {
@@ -148,6 +150,11 @@ export default {
     }
   },
   methods: {
+    resizeHandler() {
+      setTimeout(() => {
+          this.resetScroller(null, 600)
+        }, 500)
+    },
     generateItemAccumulator (init) {
       if (!this.variable) return
       if (init) {
@@ -387,6 +394,9 @@ export default {
         transform: 'translate(0, ' + item._top + 'px)'
       }
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize)
   }
 }
 </script>
