@@ -331,6 +331,7 @@ export default {
       this.myScroll.refresh(time)
     },
     updateScrollView () {
+      const currentShowIndexList = []
       if (!this.variable) {
         let scrolledLength = Math.max(Math.floor(-this.myScroll.y / this.itemHeight) - this.buffer, 0)
         let majorPhase = Math.floor(scrolledLength / this.pool.length)
@@ -344,9 +345,11 @@ export default {
           }
           if (i < this.pool.length && this.pool[i]._top !== top) {
             this.updateItem(i, top)
+            currentShowIndexList.push(i)
           }
           i++
         }
+
       } else {
         let scrolledIndex = this.getScrolledIndex(-this.myScroll.y)
         let scrolledLength = Math.max(scrolledIndex - this.buffer, 0)
@@ -361,10 +364,15 @@ export default {
           }
           if (newIndex < this.items.length && this.pool[i] !== this.items[newIndex]) {
             this.updateItem(i, newIndex)
+            currentShowIndexList.push(i)
           }
           i++
         }
       }
+      currentShowIndexList.sort((a, b) => a - b)
+      this.$emit("updateShowItems", {
+        list: currentShowIndexList
+      })
     },
     updateItem (i, top) {
       if (!this.variable) {
